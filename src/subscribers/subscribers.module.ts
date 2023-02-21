@@ -4,4 +4,4 @@ import { SubscribersService } from './subscribers.service';
 @Module({
   providers: [SubscribersService]
 })
-export class SubscribersModule {}
+export class SubscribersModule { }
