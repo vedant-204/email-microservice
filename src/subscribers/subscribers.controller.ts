@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { EventPattern } from '@nestjs/microservices';
+import { EventPattern, MessagePattern, RmqContext } from '@nestjs/microservices';
 import CreateSubscribersDto from './dto/createSubscribers.dto';
 import { SubscribersService } from './subscribers.service';
 
@@ -9,9 +9,13 @@ export class SubscribersController {
     private readonly subscribersService: SubscribersService,
   ) { }
 
-  @EventPattern({ cmd: 'add-subscriber' })
-  addSubscriber(subscriber: CreateSubscribersDto) {
-    return this.subscribersService.addSubscriber(subscriber);
+  @MessagePattern({ cmd: 'add-subscriber' })
+  async addSubscriber(@Payload() subscriber: CreateSubscribersDto, @Ctx() context: RmqContext) {
+    const newSubscriber = await this.subscribersService.addSubscriber(subscriber);
+    const channel = context.getChannelRef();
+    const originalMsg = context.getMessage();
+
+    channel.ack(originalMsg)
   }
 
   @EventPattern({ cmd: 'get-subscriber' })
