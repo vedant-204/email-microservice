@@ -1,5 +1,5 @@
 import { Controller } from '@nestjs/common';
-import { EventPattern, MessagePattern, RmqContext } from '@nestjs/microservices';
+import { EventPattern, MessagePattern, RmqContext, Payload, Ctx } from '@nestjs/microservices';
 import CreateSubscribersDto from './dto/createSubscribers.dto';
 import { SubscribersService } from './subscribers.service';
 
@@ -16,6 +16,7 @@ export class SubscribersController {
     const originalMsg = context.getMessage();
 
     channel.ack(originalMsg)
+    return newSubscriber;
   }
 
   @EventPattern({ cmd: 'get-subscriber' })
